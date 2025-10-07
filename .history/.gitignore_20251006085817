@@ -1,0 +1,8 @@
+# VS Code History extension
+.history/
+
+# macOS
+.DS_Store
+
+# Node.js
+node_modules/
