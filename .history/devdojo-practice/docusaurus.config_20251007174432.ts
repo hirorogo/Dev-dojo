@@ -17,7 +17,7 @@ const config: Config = {
   url: 'https://hirorogo.github.io', 
   baseUrl: '/Dev-Dojo/', // 例: '/Dev-Dojo/'
   // GitHubPages用: GitHubユーザー名またはOrganization名
-  organizationName: 'hirorogo', // 例: 'ootomonaiso'
+  organizationName: '', // 例: 'ootomonaiso'
   // GitHubPages用: リポジトリ名
   projectName: 'Dev-Dojo',
 
@@ -87,7 +87,7 @@ const config: Config = {
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           // GitHubリンク（実際のリポジトリURLに変更）
-          href: 'https://github.com/hirorogo/Dev-Dojo', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
+          href: 'https://github.com/facebook/docusaurus', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
           label: 'GitHub',
           position: 'right',
         },

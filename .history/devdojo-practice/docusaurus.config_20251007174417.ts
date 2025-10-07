@@ -17,7 +17,7 @@ const config: Config = {
   url: 'https://hirorogo.github.io', 
   baseUrl: '/Dev-Dojo/', // 例: '/Dev-Dojo/'
   // GitHubPages用: GitHubユーザー名またはOrganization名
-  organizationName: 'hirorogo', // 例: 'ootomonaiso'
+  organizationName: '', // 例: 'ootomonaiso'
   // GitHubPages用: リポジトリ名
   projectName: 'Dev-Dojo',
 
@@ -40,7 +40,7 @@ const config: Config = {
           // GitHubPages用: 実際のリポジトリのeditURL
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-            // 例: 'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
+            // 例: 'https://github.com/ootomonaiso/Dev-Dojo/tree/main/devdojo-practice/',
         },
         blog: {
           showReadingTime: true,
@@ -53,7 +53,7 @@ const config: Config = {
           // GitHubPages用: 実際のリポジトリのeditURL
           editUrl:
             'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-            // 例: 'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
+            // 例: 'https://github.com/ootomonaiso/DevDojo_matome/tree/main/devdojo-practice/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -87,7 +87,7 @@ const config: Config = {
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           // GitHubリンク（実際のリポジトリURLに変更）
-          href: 'https://github.com/hirorogo/Dev-Dojo', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
+          href: 'https://github.com/facebook/docusaurus', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
           label: 'GitHub',
           position: 'right',
         },

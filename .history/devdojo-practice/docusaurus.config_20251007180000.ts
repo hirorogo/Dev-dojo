@@ -87,7 +87,7 @@ const config: Config = {
         {to: '/blog', label: 'Blog', position: 'left'},
         {
           // GitHubリンク（実際のリポジトリURLに変更）
-          href: 'https://github.com/hirorogo/Dev-Dojo', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
+          href: 'https://github.com/hirorogo/Dev-Dojocusaurus', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
           label: 'GitHub',
           position: 'right',
         },
