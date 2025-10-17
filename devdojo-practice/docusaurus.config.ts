@@ -14,12 +14,13 @@ const config: Config = {
     v4: true, 
   },
 
-  url: 'https://hirorogo.github.io', 
-  baseUrl: '/Dev-Dojo/', // 大文字Dで始まる
-  // GitHubPages用: GitHubユーザー名またはOrganization名
-  organizationName: 'hirorogo', // 例: 'ootomonaiso'
-  // GitHubPages用: リポジトリ名
-  projectName: 'Dev-Dojo', // 大文字Dで始まる
+  // GitHub Pagesの基本URLを指定（リポジトリ名と正確に一致させる）
+  url: 'https://hirorogo.github.io',
+  baseUrl: '/Dev-dojo/', 
+  // GitHubPages用: GitHubユーザー名
+  organizationName: 'hirorogo',
+  // GitHubPages用: リポジトリ名（リモートと一致させる）
+  projectName: 'Dev-dojo',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
