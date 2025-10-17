@@ -15,11 +15,11 @@ const config: Config = {
   },
 
   url: 'https://hirorogo.github.io', 
-  baseUrl: '/Dev-Dojo/', // 例: '/Dev-Dojo/'
+  baseUrl: '/Dev-Dojo/', // 大文字Dで始まる
   // GitHubPages用: GitHubユーザー名またはOrganization名
   organizationName: 'hirorogo', // 例: 'ootomonaiso'
   // GitHubPages用: リポジトリ名
-  projectName: 'Dev-Dojo',
+  projectName: 'Dev-Dojo', // 大文字Dで始まる
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -39,8 +39,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // GitHubPages用: 実際のリポジトリのeditURL
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-            // 例: 'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
+            'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
         },
         blog: {
           showReadingTime: true,
@@ -52,8 +51,7 @@ const config: Config = {
           // Remove this to remove the "edit this page" links.
           // GitHubPages用: 実際のリポジトリのeditURL
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-            // 例: 'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
+            'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -70,11 +68,10 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      // サイトタイトル（変更推奨）
-      title: 'My Site', // 例: 'DevDojo Practice'
+      // サイトタイトル
+      title: 'Dev-Dojo',
       logo: {
-        // ロゴのalt属性（変更推奨）
-        alt: 'My Site Logo', // 例: 'DevDojo Practice Logo'
+        alt: 'Dev-Dojo Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -86,8 +83,8 @@ const config: Config = {
         },
         {to: '/blog', label: 'Blog', position: 'left'},
         {
-          // GitHubリンク（実際のリポジトリURLに変更）
-          href: 'https://github.com/hirorogo/Dev-Dojo', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
+          // GitHubリンク
+          href: 'https://github.com/hirorogo/Dev-Dojo',
           label: 'GitHub',
           position: 'right',
         },
@@ -132,13 +129,13 @@ const config: Config = {
             {
               label: 'GitHub',
               // フッターのGitHubリンク（実際のリポジトリURLに変更）
-              href: 'https://github.com/facebook/docusaurus', // 例: 'https://github.com/ootomonaiso/DevDojo_matome'
+              href: 'https://github.com/hirorogo/Dev-Dojo',
             },
           ],
         },
       ],
-      // コピーライト表示（プロジェクト名を変更）
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`, // 例: DevDojo Practice
+      // コピーライト表示
+      copyright: `Copyright © ${new Date().getFullYear()} Dev-Dojo, Inc. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
