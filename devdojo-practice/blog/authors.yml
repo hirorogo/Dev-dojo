@@ -1,0 +1,5 @@
+admin:
+  name: Admin
+  title: 管理者
+  url: https://github.com
+  image_url: https://github.com/ghost.png
