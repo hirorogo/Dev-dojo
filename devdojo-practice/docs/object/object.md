@@ -1,32 +1,28 @@
 ---
 sidebar_position: 2
 ---
-
 # オブジェクト指向
-
-オブジェクト指向って一言で言うと**ものごとにデータと動きをまとめる**ということです。
-そこで得られる利点があります。
+オブジェクト指向って一言で言うとものごとにデータと動きをまとめる
+ということです
+そこで得られる利点があります
 
 ## 何がうれしいのか
+- 処理を1つのまとまり（オブジェクト）として扱える
+- 変更や再利用しやすくなる
+- 現実世界の概念に近い設計ができ、理解と保守が容易になる
+- SOLID原則に沿った開発がしやすくなる
 
-- **処理を1つのまとまり（オブジェクト）として扱える**
-- **変更や再利用しやすくなる**
-- **現実世界の概念に近い設計ができ、理解と保守が容易になる**
-- **SOLID原則に沿った開発がしやすくなる**
 
 ## 基本用語
-
-- **クラス**: 設計図。どんなデータ（プロパティ）と振る舞い（メソッド）を持つかを定義する
-- **オブジェクト（インスタンス）**: クラスから実体化したもの
-- **プロパティ**: データのこと
-- **メソッド**: 動くところのこと
-
-**クラスを作り→オブジェクトにする。**
-それが一つの流れです。
+- クラス: 設計図。（プロパティ）と振る舞い（メソッド）を持つかを定義する
+- オブジェクト（インスタンス）: クラスから実体化したもの
+- プロパティ: データのこと
+- メソッド: 動くところのこと
+クラスを作り→オブジェクトにする。
+それが一つの流れです
 例のコードを見て学習しましょう！
 
 ## JSの例
-
 ```js
 // 人を表すクラスを作ります
 class Person {
@@ -49,49 +45,44 @@ const p = new Person('Taro');
 console.log(p.greet()); // => こんにちは、Taroです。
 ```
 
-## 設計のコツ
 
-- **SOLID原則を守る**
-- **内部状態は隠蔽する**
-- **public最小化**
-- **できるだけ使い回せるように抽象的に書く**
+ ## 設計のコツ
+- SOLID原則を守る
+- 内部状態は隠、
+- public最小化
+- できるだけ使い回せるように抽象的に書く
 
 ## SOLID原則とは
+- **S（単一責任の原則）**  
+　1つのクラスや関数で「一つのこと」だけをするというお作法です
+それを行うことによって得られるメリットとして
+どこまで正しく動いているのかということが明確にわかるようになり
 
-### **S（単一責任の原則）**
-1つのクラスや関数で「一つのこと」だけをするというお作法です。
-それを行うことによって得られるメリットとして、どこまで正しく動いているのかということが明確にわかるようになります。
-
-### **O（オープン・クローズドの原則）**
+- **O（オープン・クローズドの原則）**  
 新しい機能を追加するときは、中身を壊さずに外から追加できるようにする、というルールです。
-既存の動作を壊してしまう可能性や他の箇所への悪影響が出る可能性を避けることができます。
+既存の動作を壊してしまう可能性や他の所得の悪影響が出る可能性があります
+- **L（リスコフの置換原則）**  
+  親のクラスを使っていたところに、子どものクラスを入れてもちゃんと動くようにしよう、というルールです。  
+  例：犬のロボットの代わりに猫のロボットを使っても、同じように「歩く」ならOK、という感じです。
 
-### **L（リスコフの置換原則）**
-親のクラスを使っていたところに、子どものクラスを入れてもちゃんと動くようにしよう、というルールです。
-**例**：犬のロボットの代わりに猫のロボットを使っても、同じように「歩く」ならOK、という感じです。
+- **I（インターフェース分離の原則）**  
+  使う人が必要な機能だけを知ればいいように、分けておこう、というルールです。  
+例：テレビのリモコンで「電源」と「音量」だけ知っていれば使える、みたいなイメージです。
 
-### **I（インターフェース分離の原則）**
-使う人が必要な機能だけを知ればいいように、分けておこう、というルールです。
-**例**：テレビのリモコンで「電源」と「音量」だけ知っていれば使える、みたいなイメージです。
-
-### **D（依存性逆転の原則）**
-具体的なものではなく、ざっくりしたルールに頼るようにしよう、というルールです。
-**例**：サッカーの試合で「ルール」に従えば、どのチームでも試合ができる、という感じです。
+- **D（依存性逆転の原則）**  
+  具体的なものではなく、ざっくりしたルールに頼るようにしよう、というルールです。  
+  例：サッカーの試合で「ルール」に従えば、どのチームでも試合ができる、という感じです。
 
 ---
+つまり
+「1つのことだけやる」「消さずに足す」「入れ替えても動く」「必要なものだけ知る」「ルールに従う」  
+この5つを守ることで素晴らしいコードが書けます
 
-### つまり
-**「1つのことだけやる」「消さずに足す」「入れ替えても動く」「必要なものだけ知る」「ルールに従う」**
-この5つを守ることで素晴らしいコードが書けます。
-
-## Reactのお作法
-
-皆さんはコーディングするときに`src`や`Component`というファイルを見たことがあるのでしょうか？
-ファイル名にお作法があります。
-**お作法を守るとハッピーに複数人での開発とかスムーズに行ったりするよ！**
-
-### ファイル名のお作法
-
+###　Reactのお作法
+皆さんはコーディングするときに　srcやComponentというファイルを見たことがあるのでしょうか？
+ファイル名にお作法があります
+お作法を守るとハッピーに複数人での開発とかスムーズに行ったりするよ！
+#### ファイル名のお作法
 ```
 src/
 ├── components/          // コンポーネントを格納
@@ -106,163 +97,487 @@ src/
     └── User.ts         // 型は大文字始まり
 ```
 
-### 命名規則のお作法
+- **変数・関数名**: camelCase（小文字始まり）
+  ```tsx
+  // 良い例
+  const userName = 'Taro';
+  const handleClick = () => { ... };
+  
+  // 悪い例
+  const user_name = 'Taro';     // アンダースコア
+  const HandleClick = () => { ... }; // 大文字始まり
+  ```
 
-#### **変数・関数名**: camelCase（小文字始まり）
-```tsx
-// 良い例
-const userName = 'Taro';
-const handleClick = () => { ... };
+- **定数**: UPPER_SNAKE_CASE（全て大文字＋アンダースコア）
+  ```tsx
+  // 良い例
+  const API_URL = 'https://api.example.com';
+  const MAX_RETRY_COUNT = 3;
+  ```
 
-// 悪い例
-const user_name = 'Taro';     // アンダースコア
-const HandleClick = () => { ... }; // 大文字始まり
-```
+- **プロパティ名**: camelCase
+  ```tsx
+  // 良い例
+  interface UserProps {
+    firstName: string;
+    isActive: boolean;
+    onButtonClick: () => void;
+  }
+  ```
 
-#### **定数**: UPPER_SNAKE_CASE（全て大文字＋アンダースコア）
-```tsx
-// 良い例
-const API_URL = 'https://api.example.com';
-const MAX_RETRY_COUNT = 3;
-```
 
-#### **プロパティ名**: camelCase
-```tsx
-// 良い例
-interface UserProps {
-  firstName: string;
-  isActive: boolean;
-  onButtonClick: () => void;
-}
-```
+#### コンポーネントのお作法
 
-## コンポーネントのお作法とSOLID原則の実践
 
-**ReactコンポーネントでSOLID原則を実践！**
+ReactコンポーネントでSOLID原則を実践！
 
-### 1. **単一責任の原則（S）** - 1つのコンポーネントは1つの責任だけを持つ
+1. **単一責任の原則（S）** - 1つのコンポーネントは1つの責任だけを持つ
+   ```jsx
+   // 良い例：ログインボタンだけの責任
+   const LoginButton = ({ onClick, isLoading }) => (
+     <button 
+       onClick={onClick} 
+       disabled={isLoading}
+       className="login-button"
+     >
+       {isLoading ? '処理中...' : 'ログイン'}
+     </button>
+   );
+   
+   // 良い例：ユーザー情報表示だけの責任
+   const UserProfile = ({ user }) => (
+     <div className="user-profile">
+       <img src={user.avatar} alt={`${user.name}のアバター`} />
+       <h3>{user.name}</h3>
+       <p>{user.email}</p>
+     </div>
+   );
+   
+   // 悪い例：複数の責任を持っている
+   const LoginButtonWithNavigation = ({ onClick, user, onLogout }) => (
+     <div>
+       <nav className="header">
+         <span>ようこそ、{user?.name}さん</span>
+         {user && <button onClick={onLogout}>ログアウト</button>}
+       </nav>
+       <button onClick={onClick}>ログイン</button>
+       <div className="user-status">
+         <p>最終ログイン: {user?.lastLogin}</p>
+       </div>
+     </div>
+   );
+   ```
+
+2. **オープン・クローズドの原則（O）** - 拡張に開いて、修正に閉じる
+   ```jsx
+   // 良い例：基本ボタンを定義
+   const BaseButton = ({ children, onClick, className = '', ...props }) => (
+     <button 
+       onClick={onClick}
+       className={`btn ${className}`}
+       {...props}
+     >
+       {children}
+     </button>
+   );
+   
+   // 拡張：既存コードを変更せずに新機能を追加
+   const PrimaryButton = ({ children, ...props }) => (
+     <BaseButton className="btn-primary" {...props}>
+       {children}
+     </BaseButton>
+   );
+   
+   const DangerButton = ({ children, ...props }) => (
+     <BaseButton className="btn-danger" {...props}>
+       {children}
+     </BaseButton>
+   );
+   
+   const IconButton = ({ icon, children, ...props }) => (
+     <BaseButton {...props}>
+       <span className="icon">{icon}</span>
+       {children}
+     </BaseButton>
+   );
+   ```
+
+3. **リスコフの置換原則（L）** - 親コンポーネントを子コンポーネントで置き換えても動作する
+   ```jsx
+   // 基本的な入力コンポーネント
+   const BaseInput = ({ value, onChange, placeholder, ...props }) => (
+     <input
+       value={value}
+       onChange={onChange}
+       placeholder={placeholder}
+       {...props}
+     />
+   );
+   
+   // 拡張した入力コンポーネント（BaseInputと同じように使える）
+   const EmailInput = ({ value, onChange, ...props }) => (
+     <BaseInput
+       type="email"
+       value={value}
+       onChange={onChange}
+       placeholder="メールアドレスを入力"
+       {...props}
+     />
+   );
+   
+   const PasswordInput = ({ value, onChange, ...props }) => (
+     <BaseInput
+       type="password"
+       value={value}
+       onChange={onChange}
+       placeholder="パスワードを入力"
+       {...props}
+     />
+   );
+   
+   // どちらも同じように使用可能
+   const LoginForm = () => {
+     const [email, setEmail] = useState('');
+     const [password, setPassword] = useState('');
+     
+     return (
+       <form>
+         <EmailInput value={email} onChange={(e) => setEmail(e.target.value)} />
+         <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+       </form>
+     );
+   };
+   ```
+
+4. **インターフェース分離の原則（I）** - 不要な機能に依存させない
+   ```jsx
+   // 悪い例：使わない機能まで渡している
+   const BadUserCard = ({ user, onEdit, onDelete, onShare, onBlock, onReport }) => (
+     <div className="user-card">
+       <h3>{user.name}</h3>
+       <p>{user.email}</p>
+       {/* 実際にはonEditしか使わない */}
+       <button onClick={() => onEdit(user.id)}>編集</button>
+     </div>
+   );
+   
+   // 良い例：必要な機能だけを受け取る
+   const UserCard = ({ user, onEdit }) => (
+     <div className="user-card">
+       <h3>{user.name}</h3>
+       <p>{user.email}</p>
+       <button onClick={() => onEdit(user.id)}>編集</button>
+     </div>
+   );
+   
+   const UserActions = ({ userId, onDelete, onShare, onBlock }) => (
+     <div className="user-actions">
+       <button onClick={() => onDelete(userId)}>削除</button>
+       <button onClick={() => onShare(userId)}>共有</button>
+       <button onClick={() => onBlock(userId)}>ブロック</button>
+     </div>
+   );
+   ```
+
+5. **依存性逆転の原則（D）** - 具体的な実装ではなく、抽象的な仕組みに依存する
+   ```jsx
+   // 悪い例：具体的なAPIに直接依存
+   const BadUserList = () => {
+     const [users, setUsers] = useState([]);
+     
+     useEffect(() => {
+       // 直接APIを呼び出している
+       fetch('/api/users')
+         .then(res => res.json())
+         .then(setUsers);
+     }, []);
+     
+     return (
+       <div>
+         {users.map(user => <UserCard key={user.id} user={user} />)}
+       </div>
+     );
+   };
+   
+   // 良い例：抽象的な仕組み（hooks）を通して依存
+   const UserList = () => {
+     const { users, loading, error } = useUsers(); // カスタムフック
+     
+     if (loading) return <div>読み込み中...</div>;
+     if (error) return <div>エラーが発生しました</div>;
+     
+     return (
+       <div>
+         {users.map(user => <UserCard key={user.id} user={user} />)}
+       </div>
+     );
+   };
+   
+   // データ取得の詳細は別のところで管理
+   const useUsers = () => {
+     const [users, setUsers] = useState([]);
+     const [loading, setLoading] = useState(true);
+     const [error, setError] = useState(null);
+     
+     useEffect(() => {
+       fetchUsers() // この中でAPIの詳細を隠蔽
+         .then(setUsers)
+         .catch(setError)
+         .finally(() => setLoading(false));
+     }, []);
+     
+     return { users, loading, error };
+   };
+   ```
+
+#### SOLID原則を守ったコンポーネント設計の実例
 
 ```jsx
-// 良い例：ログインボタンだけの責任
-const LoginButton = ({ onClick, isLoading }) => (
+// 1. 単一責任：ボタンコンポーネント
+const Button = ({ children, onClick, variant = 'primary', size = 'medium', disabled = false }) => (
   <button 
-    onClick={onClick} 
-    disabled={isLoading}
-    className="login-button"
-  >
-    {isLoading ? '処理中...' : 'ログイン'}
-  </button>
-);
-
-// 良い例：ユーザー情報表示だけの責任
-const UserProfile = ({ user }) => (
-  <div className="user-profile">
-    <img src={user.avatar} alt={`${user.name}のアバター`} />
-    <h3>{user.name}</h3>
-    <p>{user.email}</p>
-  </div>
-);
-
-// 悪い例：複数の責任を持っている
-const LoginButtonWithNavigation = ({ onClick, user, onLogout }) => (
-  <div>
-    <nav className="header">
-      <span>ようこそ、{user?.name}さん</span>
-      {user && <button onClick={onLogout}>ログアウト</button>}
-    </nav>
-    <button onClick={onClick}>ログイン</button>
-    <div className="user-status">
-      <p>最終ログイン: {user?.lastLogin}</p>
-    </div>
-  </div>
-);
-```
-
-### 2. **オープン・クローズドの原則（O）** - 拡張に開いて、修正に閉じる
-
-```jsx
-// 良い例：基本ボタンを定義
-const BaseButton = ({ children, onClick, className = '', ...props }) => (
-  <button 
+    className={`btn btn-${variant} btn-${size}`}
     onClick={onClick}
-    className={`btn ${className}`}
-    {...props}
+    disabled={disabled}
   >
     {children}
   </button>
 );
 
-// 拡張：既存コードを変更せずに新機能を追加
-const PrimaryButton = ({ children, ...props }) => (
-  <BaseButton className="btn-primary" {...props}>
-    {children}
-  </BaseButton>
+// 2. オープン・クローズド：拡張可能な設計
+const SubmitButton = (props) => (
+  <Button variant="success" {...props}>
+    送信
+  </Button>
 );
 
-const DangerButton = ({ children, ...props }) => (
-  <BaseButton className="btn-danger" {...props}>
-    {children}
-  </BaseButton>
+// 3. リスコフ置換：どこでも使える
+const CancelButton = (props) => (
+  <Button variant="secondary" {...props}>
+    キャンセル
+  </Button>
 );
 
-const IconButton = ({ icon, children, ...props }) => (
-  <BaseButton {...props}>
-    <span className="icon">{icon}</span>
-    {children}
-  </BaseButton>
-);
-```
-
-### 3. **リスコフの置換原則（L）** - 親コンポーネントを子コンポーネントで置き換えても動作する
-
-```jsx
-// 基本的な入力コンポーネント
-const BaseInput = ({ value, onChange, placeholder, ...props }) => (
-  <input
-    value={value}
-    onChange={onChange}
-    placeholder={placeholder}
-    {...props}
-  />
+// 4. インターフェース分離：必要な機能だけ
+const FormActions = ({ onSubmit, onCancel }) => (
+  <div className="form-actions">
+    <SubmitButton onClick={onSubmit} />
+    <CancelButton onClick={onCancel} />
+  </div>
 );
 
-// 拡張した入力コンポーネント（BaseInputと同じように使える）
-const EmailInput = ({ value, onChange, ...props }) => (
-  <BaseInput
-    type="email"
-    value={value}
-    onChange={onChange}
-    placeholder="メールアドレスを入力"
-    {...props}
-  />
-);
-
-const PasswordInput = ({ value, onChange, ...props }) => (
-  <BaseInput
-    type="password"
-    value={value}
-    onChange={onChange}
-    placeholder="パスワードを入力"
-    {...props}
-  />
-);
-
-// どちらも同じように使用可能
-const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+// 5. 依存性逆転：抽象化されたデータ操作
+const UserForm = ({ userId }) => {
+  const { user, updateUser } = useUser(userId); // 抽象化
+  const [formData, setFormData] = useState(user);
+  
+  const handleSubmit = () => {
+    updateUser(formData); // 具体的な更新方法は知らない
+  };
   
   return (
     <form>
-      <EmailInput value={email} onChange={(e) => setEmail(e.target.value)} />
-      <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+      <input 
+        value={formData.name}
+        onChange={(e) => setFormData({...formData, name: e.target.value})}
+      />
+      <FormActions 
+        onSubmit={handleSubmit}
+        onCancel={() => window.history.back()}
+      />
     </form>
   );
 };
 ```
 
-### 4. **インターフェース分離の原則（I）** - 不要な機能に依存させない
+
+1. **単一責任の原則**
+   ```jsx
+   // １つの機能だけ！
+   const LoginButton = ({ onClick }) => (
+     <button onClick={onClick}>ログイン</button>
+   );
+   
+   // 悪い例：複数の昨日
+   const LoginButtonWithNavigation = ({ onClick, user }) => (
+     <div>
+       <nav>{user.name}</nav>
+       <button onClick={onClick}>ログイン</button>
+     </div>
+   );
+   ```
+
+
+
+
+
+
+#### プロップス（props）のお作法
+
+プロップスは、コンポーネント同士でデータをやり取りするための仕組みです。
 
 ```jsx
-// 悪い例：使わない機能まで渡している
-const BadUserCard = ({ user, onEdit, onDelete, onShare
+// 良い例：型を明確にする
+interface ButtonProps {
+  children: React.ReactNode;  // ボタンの中身
+  onClick: () => void;        // クリックした時の動作
+  disabled?: boolean;         // 押せるかどうか（？は省略可能の意味）
+  size?: 'small' | 'medium' | 'large';  // サイズの選択肢
+}
+
+const Button = ({ children, onClick, disabled = false, size = 'medium' }: ButtonProps) => (
+  <button 
+    onClick={onClick}
+    disabled={disabled}
+    className={`btn btn-${size}`}
+  >
+    {children}
+  </button>
+);
+
+// 使い方
+<Button onClick={() => console.log('クリック!')} size="large">
+  大きなボタン
+</Button>
+```
+
+
+#### 状態管理のお作法
+
+状態（state）は、コンポーネントが覚えておくデータのことです。
+ゲームのスコアや、入力フォームの内容などです。
+
+```jsx
+// 良い例：1つのことだけ管理
+const Counter = () => {
+  const [count, setCount] = useState(0);  // 数を覚える
+  
+  const increment = () => setCount(count + 1);  // 増やす
+  const decrement = () => setCount(count - 1);  // 減らす
+  
+  return (
+    <div>
+      <p>現在の数: {count}</p>
+      <button onClick={increment}>+1</button>
+      <button onClick={decrement}>-1</button>
+    </div>
+  );
+};
+
+// 悪い例：いろんなものを一緒に管理
+const MessyComponent = () => {
+  const [data, setData] = useState({
+    count: 0,
+    userName: '',
+    isLoggedIn: false,
+    posts: [],
+    currentPage: 1
+  }); // ごちゃごちゃで何がなんだかわからない
+};
+```
+
+
+## お作法を守ることによるメリット
+
+### 1. チーム開発がスムーズになる
+```jsx
+// お作法を守ったコード：誰が見てもわかる
+const UserProfile = ({ user }) => {
+  return (
+    <div className="user-profile">
+      <h2>{user.name}</h2>
+      <p>{user.email}</p>
+    </div>
+  );
+};
+
+// お作法を守らないコード：何をしているかわからない
+const comp1 = ({ data }) => (
+  <div><h2>{data.n}</h2><p>{data.e}</p></div>
+);
+```
+
+### 2. バグが見つけやすくなる
+- 1つのコンポーネントが1つのことだけをするので、問題の原因がすぐにわかります
+- コードが整理されているので、どこに問題があるか特定しやすくなります
+
+### 3. 機能追加や修正が簡単になる
+```jsx
+// 再利用しやすいコンポーネント
+const Button = ({ children, onClick, variant = 'primary' }) => (
+  <button 
+    onClick={onClick}
+    className={`btn btn-${variant}`}
+  >
+    {children}
+  </button>
+);
+
+// 新しい場所でも簡単に使える
+<Button onClick={handleSave} variant="success">保存</Button>
+<Button onClick={handleDelete} variant="danger">削除</Button>
+```
+
+### 4. コードの品質が上がる
+- 命名規則を守ることで、変数や関数の役割が明確になります
+- ファイル構成を整理することで、必要なファイルがすぐに見つかります
+- テストが書きやすくなり、品質の高いプログラムを作れます
+
+### 5. 学習コストが下がる
+- ルールが統一されているので誰が見ても理解しやすい
+- 他の人が書いたコードも読みやすくなります
+- 他のプロジェクトでも流用できる
+
+### 6. 保守性が向上する
+```jsx
+// 保守しやすい例：責任が分かれている
+const UserList = ({ users }) => (
+  <div>
+    {users.map(user => (
+      <UserCard key={user.id} user={user} />
+    ))}
+  </div>
+);
+
+const UserCard = ({ user }) => (
+  <div className="user-card">
+    <h3>{user.name}</h3>
+    <p>{user.department}</p>
+  </div>
+);
+
+// 保守しにくい例：全部一緒になっている
+const UserComponent = ({ users, showDetails, onEdit, onDelete }) => (
+  <div>
+    {users.map(user => (
+      <div key={user.id}>
+        <h3>{user.name}</h3>
+        {showDetails && <p>{user.department}</p>}
+        <button onClick={() => onEdit(user.id)}>編集</button>
+        <button onClick={() => onDelete(user.id)}>削除</button>
+      </div>
+    ))}
+  </div>
+);
+```
+
+### まとめ
+お作法を守ることで：
+- **開発効率が上がる** - コードを書く時間、読む時間が短縮される
+- **品質が向上する** - バグが少なく、安定したプログラムが作れる
+- **チームワークが良くなる** - 誰でも理解できるコードになる
+- **自分が助かる** - バイブスを上げてコーディングしても作法を守ればバイブスは落ち着きます！
+後から見返した時に理解しやすい
+
+
+## まとめ
+
+オブジェクト指向は、プログラムを「もの」として考える方法です。
+現実世界のものと同じように、データ（プロパティ）と動作（メソッド）をセットにして考えます。
+
+**覚えておくべきポイント：**
+- 1つのクラスやコンポーネントは1つのことだけをする
+- 再利用しやすいように作る
+- わかりやすい名前をつける
+- ファイルやフォルダを整理整頓する
+- SOLID原則を意識する
