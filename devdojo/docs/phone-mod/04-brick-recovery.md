@@ -116,6 +116,31 @@ for unit_num, data in units.items():
 | Development bootloader フラッシュ | Failed to verify cms | 署名検証失敗 |
 | TA unit 2010 (SIMLOCK) の読み取り | error=-22 | 暗号化済みユニット |
 
+## 補足: Global化の正しい方法（TAを変更しない）
+
+:::tip 文鎮化を回避できた方法
+今回の文鎮化はCDA_NRを直接TAパーティションで書き換えたことが原因でした。実は、**TAを一切変更せずに**Global化する方法があります。（[j4nn/xperable Issue #2](https://github.com/j4nn/xperable/issues/2) のcuynu氏の情報）
+
+**手順:**
+1. [XperiFirm](https://xdaforums.com/t/tool-xperifirm-xperia-firmware-downloader-v5-7-0.2834142/) で **H8116** (シングルSIM版) のGlobalファームウェアをダウンロード
+2. ダウンロードしたファームウェアフォルダ内の **`*.ta` ファイルを全て削除**
+3. `newflasher` でフラッシュ
+
+```bash
+# .taファイルを削除してからフラッシュ
+cd firmware_H8116_global/
+rm -f *.ta
+./newflasher
+```
+
+TAファイルを削除することで、newflasherがTAパーティションを上書きしません。ファームウェア(system/vendor/boot等)だけがGlobal版に置き換わり、TAの整合性は保たれます。
+
+**注意:**
+- docomo版 (SO-04K) はGlobal化不可（ハードウェアレベルの制限）
+- AU版 (SOV38) / SoftBank版は可能
+- この方法ならCDA_NRの不整合による文鎮化のリスクはゼロ
+:::
+
 ## Sony fastboot の2つのモード
 
 :::info
