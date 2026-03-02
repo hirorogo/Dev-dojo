@@ -1,137 +1,208 @@
 ---
 sidebar_position: 3
-title: TAパーティション解説
+title: "Step 2: root化 (Magisk)"
+description: Magiskを使ったroot化の手順
 ---
 
-# TAパーティション (Trim Area)
+# Step 2: Magiskでroot化
 
-Sony Xperia端末の核心部分。ハードウェア設定、DRMキー、シリアル番号などデバイス固有の情報を格納する2MBのパーティション。
+## ゴール
 
-## バイナリ構造
+この章が終わると、スマホで**root権限（管理者権限）**が使えるようになります。
 
-各ユニットは以下のフォーマットで格納される：
+## root化とは？
 
-```
-┌─────────────┬─────────────┬─────────────────┬───────────┬──────────────┐
-│ unit_num    │ data_size   │ magic           │ part_id   │ data         │
-│ 4 bytes LE  │ 4 bytes LE  │ 0x3BF8E9C1      │ 4 bytes   │ variable     │
-└─────────────┴─────────────┴─────────────────┴───────────┴──────────────┘
-```
-
-- **アラインメント**: 4バイト境界
-- **ユニット総数**: 約798個（SOV38のオリジナルTA）
-- **パーティションサイズ**: 2MB
-
-## 重要なTAユニット一覧
-
-### 起動に必須
-
-| ユニット | 名前 | サイズ | 内容 |
-|---------|------|--------|------|
-| 2003 | HW_CONF | 1166 bytes | ハードウェア設定（X.509証明書）。**デバイス固有、復元不可** |
-| 2020 | CDA/CUST設定 | ~1660 bytes | CDA_NR、OP_NAME等のカスタマイゼーション情報 |
-| 2227 | STARTUP_SHUTDOWNRESULT | 4 bytes | 起動/シャットダウン結果 |
-| 4900 | SERIAL_NO | 10 bytes | シリアル番号 |
-| 4901 | PBA_ID | 9 bytes | 基板ID |
-| 4902 | PBA_ID_REV | 1 byte | 基板リビジョン |
-| 4990 | (unknown) | 1 byte | 値: 0x2A |
-
-### DRM関連
-
-| ユニット | 内容 |
-|---------|------|
-| 2022-2034 | Suntory DRMブロブ |
-| 2129 | DRM証明書 |
-| 2130 | DRM証明書 |
-| 2160 | DRM証明書 |
-| 2500 | DRMデータベース（SQLite、約40KB） |
-
-### 暗号化/書き込み制限
-
-| ユニット | 名前 | 備考 |
-|---------|------|------|
-| 2010 | SIMLOCK | 暗号化済み。Read/Write で error=-22 |
-
-## S1/XFLプロトコルでのアクセス
+スマホは通常、システムの重要な部分を触れないように制限されています。root化すると、この制限が解除されて**何でもできる**ようになります。
 
 ```
-USB VID: 0x0FCE
-USB PID: 0xB00B
-
-# 読み取り
-Read-TA:{partition}:{unit}
-例: Read-TA:2:2020
-
-# 書き込み
-upload(data) → Write-TA:{partition}:{unit}
-
-# 再起動
-Sync
+通常のスマホ:  アプリの操作のみ可能
+              ↓
+root化後:     システムファイルの編集、
+              プリインアプリの削除、
+              CPUクロック変更、
+              広告の完全ブロック... 何でもOK
 ```
 
-### sxflasherがスキップする「特殊ユニット」
+## Magiskを使う理由
 
-:::warning
-newflasher/sxflasherでファームウェアを再フラッシュすると、以下のユニットがスキップされる。つまりこれらは復元されない：
+root化の方法はいくつかありますが、**Magisk**が現在最も人気で安全な方法です。
 
-- Unit 2003 (HW_CONF)
-- Unit 2010 (SIMLOCK)
-- Unit 2129, 2210
-- Unit 4900 (SERIAL_NO)
-- Unit 66667
+| 特徴 | 説明 |
+|------|------|
+| **Systemless** | システムパーティションを直接書き換えない |
+| **SafetyNet回避** | 銀行アプリ等がroot検知をすり抜けられる |
+| **モジュール** | 機能追加がZIPインストールで簡単 |
+| **OTA対応** | システムアップデートが（ほぼ）可能 |
+| **オープンソース** | 安全性が検証可能 |
+
+## 2-1. 現在のboot imageを取得
+
+Magiskはboot image（起動イメージ）をパッチすることでrootを実現します。まず現在のboot imageを取り出します。
+
+### 方法A: TWRPから取得（推奨）
+
+```bash
+# 1. fastbootモードに入る
+adb reboot bootloader
+
+# 2. TWRPを一時起動（フラッシュではなくRAMブート）
+fastboot boot twrp-aurora.img
+# → TWRPが起動する（画面が映らない場合もある、ADBは使える）
+
+# 3. bootパーティションをコピー
+adb shell "dd if=/dev/block/by-name/boot_a of=/sdcard/Download/boot_current.img"
+
+# 4. PCに取り出す
+adb pull /sdcard/Download/boot_current.img ./
+```
+
+:::info TWRPの画面が映らない場合
+一部の端末ではTWRPの画面が表示されません。でも **ADBは使えます**。PCから `adb shell` で操作すればOKです。
 :::
 
-## TAバックアップの読み解き方
+### 方法B: ファームウェアから抽出
 
-Pythonでの解析例：
+ファームウェアの中にboot.sinやboot.imgがある場合、それを使うこともできます。ただし、OTAアップデート済みの場合はバージョンが一致しないことがあるので、方法Aの方が確実です。
 
-```python
-import struct
+## 2-2. Magiskをインストール
 
-MAGIC = 0x3BF8E9C1
+### アプリのインストール
 
-def parse_ta(ta_path):
-    with open(ta_path, 'rb') as f:
-        data = f.read()
+1. [Magisk 公式GitHub](https://github.com/topjohnwu/Magisk/releases) から最新のAPKをダウンロード
+2. PCから直接インストール：
 
-    units = {}
-    i = 0
-    while i < len(data) - 16:
-        magic_val = struct.unpack_from('<I', data, i + 8)[0]
-        if magic_val == MAGIC:
-            unit_num = struct.unpack_from('<I', data, i)[0]
-            data_size = struct.unpack_from('<I', data, i + 4)[0]
-            if data_size < 0x100000:  # sanity check
-                unit_data = data[i + 16 : i + 16 + data_size]
-                units[unit_num] = unit_data
-                i += 16 + data_size
-                # 4byte alignment
-                i = (i + 3) & ~3
-                continue
-        i += 4
-
-    return units
-
-# 使用例
-units = parse_ta('TA.img')
-print(f"Total units: {len(units)}")
-print(f"Serial: {units[4900]}")  # b'CB512FUK5D'
+```bash
+adb install Magisk-v27.0.apk
+# ※バージョン番号は最新のものに読み替えてください
 ```
 
-## ブートログの取得
+### boot imageをパッチ
 
-起動失敗の原因を調べるには、TAユニット2050を読む：
+1. boot imageをスマホに送る：
 
-```python
-boot_log = sud.read_ta(2050)  # 最大16384 bytes
-print(boot_log.decode('ascii', errors='ignore'))
+```bash
+adb push boot_current.img /sdcard/Download/
 ```
 
-出力例：
-```
-[ERROR @ hwconf.c:202]: No hardware config found
-[ERROR @ xboot_glue.c:507]: failed to setup hwconfig (-1010)
-MiscTA unit 2227 could not be read!
+2. スマホで **Magisk アプリ**を開く
+3. 「**Magisk インストール**」をタップ
+4. 「**パッチするファイルを選択**」をタップ
+5. `/sdcard/Download/boot_current.img` を選択
+6. 「**インストール**」をタップ
+7. 完了するまで待つ
+
+パッチが完了すると、`/sdcard/Download/` に `magisk_patched-XXXXX.img` が生成されます。
+
+```bash
+# パッチ済みboot imageをPCに取り出す
+adb pull /sdcard/Download/magisk_patched-XXXXX.img ./
 ```
 
-→ このログから欠損しているTAユニットを特定できる。
+## 2-3. パッチ済みboot imageをフラッシュ
+
+```bash
+# 1. fastbootモードに入る
+adb reboot bootloader
+
+# 2. パッチ済みimageを書き込み
+fastboot flash boot_a magisk_patched-XXXXX.img
+
+# ※ A/Bスロット端末の場合、現在のスロットに書き込む
+# スロット確認: fastboot getvar current-slot
+
+# 3. 再起動
+fastboot reboot
+```
+
+:::warning boot_a と boot_b
+最近のAndroid端末はA/Bスロット方式です。通常は `boot_a` でOKですが、不安な場合は：
+```bash
+fastboot getvar current-slot
+# → current-slot: a  ← この場合 boot_a に書き込む
+```
+:::
+
+## 2-4. root化の確認
+
+再起動後：
+
+1. Magiskアプリを開いて、「**インストール済み**」にバージョン番号が表示されていればOK
+2. PCからも確認：
+
+```bash
+adb shell "su -c 'id'"
+# 出力: uid=0(root) gid=0(root) groups=0(root) ...
+# ↑ uid=0 が表示されれば root化成功！
+```
+
+3. 「スーパーユーザー」ダイアログが表示されたら「**許可**」をタップ
+
+## 2-5. Magiskの基本操作
+
+### モジュールのインストール
+
+Magiskモジュールは、システムを直接変更せずに機能を追加する仕組みです。
+
+```bash
+# PCからモジュールZIPをインストール
+adb push module.zip /sdcard/Download/
+adb shell "su -c 'magisk --install-module /sdcard/Download/module.zip'"
+adb reboot  # 再起動で有効化
+```
+
+または、Magiskアプリの「**モジュール**」タブからZIPを選択してインストール。
+
+### rootシェルの使い方
+
+```bash
+# PCから
+adb shell
+$ su
+# ← プロンプトが # に変わればroot
+
+# または直接
+adb shell "su -c 'コマンド'"
+```
+
+### プロパティの変更 (resetprop)
+
+```bash
+# 読み取り専用プロパティも変更可能
+su -c 'resetprop ro.debuggable 1'
+```
+
+## トラブルシューティング
+
+### Magiskアプリが「インストールなし」と表示
+
+boot imageのパッチとフラッシュが正しくできていない可能性。再度 2-2 からやり直してください。
+
+### 「su: not found」と表示
+
+Magiskが正しくインストールされていません。Magiskアプリで「インストール」→「直接インストール」を試してください（root済みの場合）。
+
+### bootloop（起動ループ）になった
+
+1. **電源ボタン10秒長押し**で強制シャットダウン
+2. **fastbootモードに入る**（`adb reboot bootloader`、またはハードウェアキーの組み合わせ）
+3. **元のboot imageを書き戻す**：
+```bash
+fastboot flash boot_a boot_current.img  # バックアップしたオリジナル
+fastboot reboot
+```
+
+### Magiskセーフモード
+
+モジュールが原因でbootloopした場合：
+
+1. 電源ボタン長押しで強制オフ
+2. 電源を入れて、**メーカーロゴが出たらボリュームDOWNを押し続ける**
+3. Magiskセーフモード（全モジュール無効）で起動
+
+```bash
+# セーフモード起動後に問題のモジュールを削除
+adb shell "su -c 'rm -rf /data/adb/modules/問題のモジュール名'"
+adb reboot
+```
+
+これでroot化は完了です！次のページでは、改造中に起きた文鎮化とその復旧について解説します。

@@ -5,7 +5,29 @@
   width: 100%;
 }
 
-.featureSvg {
-  height: 200px;
-  width: 200px;
+.featureEmoji {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.featureCard {
+  padding: 1.5rem 1rem;
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.featureLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.featureLink:hover {
+  text-decoration: none;
+  color: inherit;
 }

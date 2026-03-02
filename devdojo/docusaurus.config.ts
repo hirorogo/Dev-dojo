@@ -2,31 +2,23 @@ import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
-// This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-
 const config: Config = {
   title: 'Dev-Dojo',
-  tagline: '開発の練習と学習を記録するサイト',
+  tagline: '学んだことを記録し、共有する場所',
   favicon: 'img/favicon.ico',
 
-  // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
-    v4: true, 
+    v4: true,
   },
 
-  // GitHub Pagesの基本URLを指定（リポジトリ名と正確に一致させる）
   url: 'https://hirorogo.github.io',
-  baseUrl: '/Dev-dojo/', 
-  // GitHubPages用: GitHubユーザー名
+  baseUrl: '/Dev-dojo/',
   organizationName: 'hirorogo',
-  // GitHubPages用: リポジトリ名（リモートと一致させる）
   projectName: 'Dev-dojo',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
-  // GitHubPages対応: トレイリングスラッシュの設定（推奨）
-  // trailingSlash: false,
   i18n: {
     defaultLocale: 'ja',
     locales: ['ja'],
@@ -38,9 +30,8 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          // GitHubPages用: 実際のリポジトリのeditURL
           editUrl:
-            'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
+            'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo/',
         },
         blog: {
           showReadingTime: true,
@@ -48,12 +39,8 @@ const config: Config = {
             type: ['rss', 'atom'],
             xslt: true,
           },
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          // GitHubPages用: 実際のリポジトリのeditURL
           editUrl:
-            'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo-practice/',
-          // Useful options to enforce blogging best practices
+            'https://github.com/hirorogo/Dev-Dojo/tree/main/devdojo/',
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
@@ -66,10 +53,8 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      // サイトタイトル
       title: 'Dev-Dojo',
       logo: {
         alt: 'Dev-Dojo Logo',
@@ -80,11 +65,15 @@ const config: Config = {
           type: 'docSidebar',
           sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Tutorial',
+          label: 'ドキュメント',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
         {
-          // GitHubリンク
+          to: '/docs/category/スマホ改造ガイド',
+          label: 'スマホ改造',
+          position: 'left',
+        },
+        {to: '/blog', label: 'ブログ', position: 'left'},
+        {
           href: 'https://github.com/hirorogo/Dev-Dojo',
           label: 'GitHub',
           position: 'right',
@@ -95,52 +84,59 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'ドキュメント',
           items: [
             {
-              label: 'Tutorial',
+              label: 'はじめに',
               to: '/docs/intro',
             },
-          ],
-        },
-        {
-          title: 'Community',
-          items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'オブジェクト指向',
+              to: '/docs/object',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'Gitの使い方',
+              to: '/docs/How to use git',
             },
           ],
         },
         {
-          title: 'More',
+          title: 'スマホ改造',
           items: [
             {
-              label: 'Blog',
+              label: 'ガイド一覧',
+              to: '/docs/category/スマホ改造ガイド',
+            },
+            {
+              label: 'BLアンロック手順',
+              to: '/docs/phone-mod/bootloader-unlock',
+            },
+            {
+              label: 'root化手順',
+              to: '/docs/phone-mod/ta-partition',
+            },
+          ],
+        },
+        {
+          title: 'リンク',
+          items: [
+            {
+              label: 'ブログ',
               to: '/blog',
             },
             {
               label: 'GitHub',
-              // フッターのGitHubリンク（実際のリポジトリURLに変更）
               href: 'https://github.com/hirorogo/Dev-Dojo',
             },
           ],
         },
       ],
-      // コピーライト表示
-      copyright: `Copyright © ${new Date().getFullYear()} Dev-Dojo, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Dev-Dojo. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['bash', 'python', 'json'],
     },
   } satisfies Preset.ThemeConfig,
 };

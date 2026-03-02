@@ -1,8 +1,8 @@
 {
-  "label": "スマホ改造",
+  "label": "スマホ改造ガイド",
   "position": 4,
   "link": {
     "type": "generated-index",
-    "description": "Sony Xperia XZ2 Premium (SOV38) のブートローダーアンロック、文鎮化、復旧、root化、DRM解析の全記録。"
+    "description": "Sony Xperia XZ2 Premium (SOV38) のブートローダーアンロックからroot化まで、初心者でもわかるステップバイステップガイド。"
   }
 }

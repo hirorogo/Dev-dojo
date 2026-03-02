@@ -1,140 +1,117 @@
 ---
 sidebar_position: 5
-title: Magiskでroot化
+title: "[Deep Dive] TAパーティション"
+description: Sony端末のTAパーティションの構造と解析方法
 ---
 
-# Magiskによるroot化
+# TAパーティション (Trim Area) 解説
 
-復旧後のデバイスにMagisk v30.6をインストールしてroot権限を取得する。
-
-## 手順
-
-### 1. 現在のboot imageをバックアップ
-
-```bash
-# TWRP経由でbootパーティションをバックアップ
-adb reboot bootloader
-fastboot boot twrp-aurora.img
-
-# TWRPが起動したらbootをバックアップ
-adb shell "dd if=/dev/block/by-name/boot_a of=/sdcard/Download/boot_a_current.img"
-adb pull /sdcard/Download/boot_a_current.img ./backup/
-```
-
-### 2. Magisk APKをインストール
-
-```bash
-# Magisk APKをダウンロード・インストール
-adb install Magisk-v30.6.apk
-```
-
-### 3. boot imageをパッチ
-
-```bash
-# boot imageをデバイスに送る
-adb push boot_a_current.img /sdcard/Download/
-
-# Magiskアプリを開き：
-# 「インストール」→「パッチするファイルを選択」→ boot_a_current.img を選択
-# → magisk_patched-xxxxx.img が /sdcard/Download/ に生成される
-
-# パッチ済みイメージを取得
-adb pull /sdcard/Download/magisk_patched-30600_XXXXX.img ./backup/
-```
-
-### 4. パッチ済みboot imageをフラッシュ
-
-```bash
-adb reboot bootloader
-fastboot flash boot_a magisk_patched-30600_XXXXX.img
-fastboot reboot
-```
-
-### 5. root確認
-
-```bash
-adb shell "su -c 'id'"
-# uid=0(root) gid=0(root) groups=0(root) ...
-```
-
-## Magiskで出来ること
-
-- `su` によるroot shell
-- `resetprop` でシステムプロパティの変更
-- Magiskモジュールによるシステムファイルのオーバーレイ（Magic Mount）
-- Zygiskによるアプリレベルのフック
-
-## 注意: dm-verity
-
-Magiskのboot imageパッチはdm-verityを無効化するが、`/vendor` パーティションのdm-verityは完全には無効化されないことがある。
-
-```bash
-# /vendor を rw でリマウント（一時的には成功する）
-su -c 'mount -o rw,remount /vendor'
-
-# しかしリブート後、変更はdm-verityにより元に戻される
-```
-
-`/vendor` への永続的な変更にはMagiskモジュールを使う必要がある。
-
-## Magiskモジュールの作成
-
-Magiskモジュールでシステムファイルを置換する基本構造：
-
-```
-module_name/
-├── module.prop          # モジュールメタデータ
-├── system/
-│   └── vendor/
-│       └── bin/
-│           └── hw/
-│               └── target_binary   # 置換対象
-├── customize.sh         # インストール時スクリプト（SELinux設定等）
-├── post-fs-data.sh      # マウント後・サービス起動前に実行
-└── service.sh           # ブート完了後に実行
-```
-
-### module.prop の例
-
-```properties
-id=my_module
-name=My Module
-version=v1.0
-versionCode=1
-author=hiro
-description=Description here
-```
-
-### インストール
-
-```bash
-adb push module.zip /sdcard/Download/
-adb shell "su -c 'magisk --install-module /sdcard/Download/module.zip'"
-adb reboot
-```
-
-### SELinuxコンテキスト
-
-:::warning
-vendor HALバイナリを置換する場合、SELinuxコンテキストを正しく設定しないとbootloopになる：
-
-```bash
-# 元のコンテキストを確認
-ls -laZ /vendor/bin/hw/target_binary
-# → u:object_r:hal_xxx_default_exec:s0
-
-# customize.sh で設定
-set_perm $MODPATH/system/vendor/bin/hw/target_binary 0 2000 0755 \
-    "u:object_r:hal_xxx_default_exec:s0"
-```
+:::info これは技術的な深掘りドキュメントです
+Step 1〜2の手順を行うだけなら、このページは読まなくてOKです。TAの仕組みを理解したい人向け。
 :::
 
-### bootloop した場合の復旧
+Sony Xperia端末の核心部分。ハードウェア設定、DRMキー、シリアル番号などデバイス固有の情報を格納する **2MB** のパーティション。
 
-電源ボタン長押しで強制シャットダウン → 起動時にXPERIAロゴが出たら **ボリュームDOWN長押し** → Magiskセーフモード（全モジュール無効）で起動。
+## バイナリ構造
 
-```bash
-# セーフモード起動後にモジュールを削除
-adb shell "su -c 'rm -rf /data/adb/modules/module_id'"
-adb reboot
+各ユニットは以下のフォーマットで格納される：
+
 ```
+┌─────────────┬─────────────┬─────────────────┬───────────┬──────────────┐
+│ unit_num    │ data_size   │ magic           │ part_id   │ data         │
+│ 4 bytes LE  │ 4 bytes LE  │ 0x3BF8E9C1      │ 4 bytes   │ variable     │
+└─────────────┴─────────────┴─────────────────┴───────────┴──────────────┘
+```
+
+- **エンディアン**: リトルエンディアン
+- **アラインメント**: 4バイト境界
+- **ユニット総数**: 約798個（SOV38のオリジナルTA）
+- **パーティションサイズ**: 2MB
+
+## 重要なTAユニット一覧
+
+### 起動に必須
+
+| ユニット | 名前 | サイズ | 内容 |
+|---------|------|--------|------|
+| 2003 | HW_CONF | 1166B | ハードウェア設定（X.509証明書）。**デバイス固有、復元不可** |
+| 2020 | CDA/CUST設定 | ~1660B | CDA_NR、OP_NAME等のカスタマイゼーション情報 |
+| 2227 | STARTUP_RESULT | 4B | 起動/シャットダウン結果 |
+| 4900 | SERIAL_NO | 10B | シリアル番号 |
+| 4901 | PBA_ID | 9B | 基板ID |
+| 4902 | PBA_ID_REV | 1B | 基板リビジョン |
+
+### DRM関連
+
+| ユニット | 内容 |
+|---------|------|
+| 2022-2034 | Suntory DRMブロブ |
+| 2129, 2130, 2160 | DRM証明書 |
+| 2500 | DRMデータベース（SQLite、約40KB、247キー） |
+
+### 暗号化・制限あり
+
+| ユニット | 名前 | 備考 |
+|---------|------|------|
+| 2010 | SIMLOCK | 暗号化済み。Read/Writeで error=-22 |
+
+## Pythonでの解析
+
+```python
+import struct
+
+MAGIC = 0x3BF8E9C1
+
+def parse_ta(ta_path):
+    """TA.imgを解析して全ユニットを辞書で返す"""
+    with open(ta_path, 'rb') as f:
+        data = f.read()
+
+    units = {}
+    i = 0
+    while i < len(data) - 16:
+        magic_val = struct.unpack_from('<I', data, i + 8)[0]
+        if magic_val == MAGIC:
+            unit_num = struct.unpack_from('<I', data, i)[0]
+            data_size = struct.unpack_from('<I', data, i + 4)[0]
+            if data_size < 0x100000:
+                unit_data = data[i + 16 : i + 16 + data_size]
+                units[unit_num] = unit_data
+                i += 16 + data_size
+                i = (i + 3) & ~3  # 4byte alignment
+                continue
+        i += 4
+    return units
+
+# 使用例
+units = parse_ta('TA.img')
+print(f"Total units: {len(units)}")
+print(f"Serial: {units[4900]}")  # b'CB512FUK5D'
+```
+
+## S1プロトコルでのアクセス
+
+```
+USB VID: 0x0FCE / PID: 0xB00B
+
+Read-TA:{partition}:{unit}    # 読み取り
+upload(data) → Write-TA:...   # 書き込み
+Sync                          # 再起動
+```
+
+## ブートログの取得（unit 2050）
+
+起動失敗の原因調査に使う：
+
+```python
+boot_log = sud.read_ta(2050)  # 最大 16384 bytes
+print(boot_log.decode('ascii', errors='ignore'))
+# → [ERROR @ hwconf.c:202]: No hardware config found
+```
+
+## sxflasherがスキップするユニット
+
+:::warning
+ファームウェア再フラッシュ時にスキップされるため、消えたら**手動で復元**が必要：
+- Unit 2003 (HW_CONF), 2010 (SIMLOCK), 2129, 2210, 4900 (SERIAL_NO), 66667
+:::
