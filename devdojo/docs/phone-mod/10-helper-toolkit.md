@@ -26,23 +26,17 @@ cd xperable
 - **Linux**: Ctrl+Alt+T
 :::
 
-### 2. xperable本体をビルド
-
-```bash
-make
-```
-
-これでxperableの実行ファイルが作られます。エラーが出る場合はgccなどの開発ツールが必要です。
-
-:::tip Macの場合
-初回だけ `xcode-select --install` が必要かもしれません（「コマンドライン開発ツール」のインストール）。
-:::
-
-### 3. ヘルパーを起動
+### 2. ヘルパーを起動（ビルド不要！）
 
 ```bash
 python3 sov38_helper.py
 ```
+
+xperableのバイナリ（実行ファイル）が手元にない場合、ヘルパーが **GitHub Releases から自動的にダウンロード** してくれます。`make` でのビルドは不要です。
+
+:::tip 対応環境
+自動ダウンロードに対応しているのは現在 **macOS (Apple Silicon)** のみです。Intel Mac / Linux / Windows の場合は `make` でビルドしてください。今後対応を増やす予定です。
+:::
 
 こんなメニューが出ます：
 
