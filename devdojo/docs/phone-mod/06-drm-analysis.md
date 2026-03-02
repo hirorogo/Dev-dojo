@@ -203,3 +203,85 @@ secdのバイナリパッチだけではカメラは復活しない。Suntoryブ
 2. **サードパーティカメラアプリ** — CKBを使わないカメラアプリ（画質低下）
 3. **カスタムROM** — CKBに依存しないカメラHALを使うROM
 :::
+
+## DRMバイパス・復旧の可能性（2026年3月時点）
+
+BLアンロック後のDRM消失に対して、現在知られているアプローチを調査しました。
+
+### カメラDRM (Suntory/CKB)
+
+| アプローチ | 実現性 | 説明 |
+|-----------|--------|------|
+| secd バイナリパッチ | ⚠️ 部分的 | BLチェックはバイパスできるが、ブロブデータが空なので実質無意味 |
+| TAバックアップ復元 | ❌ 不可 | TA復元してもハードウェアの信頼チェーン（fuse状態）が変わっているため、キーが無効 |
+| Sony-DRM-Fix-Magisk | ⚠️ 限定的 | パッチ済みsecdと独自ライブラリ (drmfix.so) を含むが、空ブロブには効果なし |
+| xperableでBLリロック | ❌ 不可（事後） | リロックしても消えたキーは復活しない。**次回の**アンロックで使えば保存可能 |
+| サードパーティカメラ | ✅ 使える | GCamなどCKB非依存のアプリなら動作。Sony独自の画像処理は使えない |
+
+:::tip xperableならDRMキーが消えない！
+xperableのREADMEには「unlock/re-lock this way does not erase Sony DRM device key」と書かれています。つまり、**xperableを最初のBLアンロック手段として使えばDRMキーが保存される**はずです。
+
+ただし重要な制限があります：
+- BLアンロック済み端末に事後的に使ってもキーは復旧しない
+- 未アンロックの端末で最初からxperableを使う必要がある
+- SOV38での動作は確認済み（このガイドの経緯）
+:::
+
+### Widevine L1
+
+| アプローチ | 実現性 | 説明 |
+|-----------|--------|------|
+| KmInstallKeybox | ⚠️ 未確認 | Xperia 1 VI (Snapdragon 8 Gen 3) で成功報告あり。SDM845では未テスト |
+| TAバックアップ復元 | ❌ 不可 | TAを戻してもTEEの信頼状態が変わっているため無効 |
+| xperableでBLリロック | ❌ 不可（事後） | キーが消えた後のリロックでは復活しない |
+| Widevine再プロビジョニング | ❌ 不可 | Google/Sonyからの正規プロビジョニングはエンドユーザーに提供されていない |
+
+#### KmInstallKeybox について
+
+XDAで報告されている実験的な方法。TEEキーストアにattestation keyをインジェクトする：
+
+```bash
+# ※ SDM845での動作は未確認。自己責任で
+LD_LIBRARY_PATH=/vendor/lib64/hw ./KmInstallKeybox /data/local/tmp/attestation attestation true
+```
+
+- Xperia 1 VI (Snapdragon 8 Gen 3) でL1復旧に成功した報告あり
+- バイナリはXiaomi 14から抽出したものを使用
+- SDM845ではkeymaster HALの実装が異なるため互換性不明
+- **操作は不可逆** — 一度インストールしたキーは元に戻せない
+- 流出したattestation keyはGoogleに速やかにrevokeされる
+
+### 根本的な問題
+
+```
+なぜDRMキーの復元が不可能なのか：
+
+  ┌──────────────────────────┐
+  │   TEE (TrustZone)       │  ← ハードウェア保護領域
+  │   ┌──────────────────┐  │
+  │   │ Hardware Fuses    │  │  ← BLアンロックで不可逆変更
+  │   │ (焼き切りビット)  │  │
+  │   └────────┬─────────┘  │
+  │            │              │
+  │   ┌────────▼─────────┐  │
+  │   │ Trust Chain       │  │  ← fuse状態に依存
+  │   │ (信頼チェーン)    │  │
+  │   └────────┬─────────┘  │
+  │            │              │
+  │   ┌────────▼─────────┐  │
+  │   │ Key Validation    │  │  ← キーの有効性判定
+  │   └──────────────────┘  │
+  └──────────────────────────┘
+              ↓
+  TAパーティションにキーデータがあっても
+  fuse状態が「unlocked」ならキーは無効と判定される
+```
+
+つまり、ソフトウェアレベルでいくらTAパーティションを操作しても、ハードウェアレベルの信頼状態が変わっているため、DRMキーは機能しません。
+
+### 参考リンク
+
+- [XDA: Fix Widevine L1 unlocked bootloader](https://xdaforums.com/t/fix-widevine-l1-unlocked-bootloader.4731374/) — KmInstallKeybox の議論
+- [XDA: XZ2/XZ2c/XZ2p/XZ3 temp root exploit](https://xdaforums.com/t/xz2-xz2c-xz2p-xz3-temp-root-exploit-via-cve-2020-0041-including-magisk-setup.4099131/) — BLアンロック前のTAバックアップ方法
+- [GitHub: Sony-DRM-Fix-Magisk](https://github.com/the-brad/Sony-DRM-Fix-Magisk) — Magisk DRM修復モジュール
+- [j4nn.github.io](https://j4nn.github.io/) — xperable/reno開発者のツールページ
