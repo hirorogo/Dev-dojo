@@ -81,6 +81,41 @@ System Ready
 | Widevine | ❌ L3に低下 | HD動画再生不可 |
 | NFC | ✅ 未確認 | |
 
+## 後からわかったこと
+
+作業完了後にGitHub Issue（[j4nn/xperable #2](https://github.com/j4nn/xperable/issues/2)）でcuynu氏から重要な情報を得た。
+
+### 先にGlobalファームを焼けばよかった
+
+AU版のP118ブートローダーはUSBバッファが大きく、xperableのデフォルトサイズ `0x400f90` ではオーバーフローが起きない。そのためサイズ修正（`0x430f90`）やhitcodeパッチが必要だった。
+
+しかし**Global版P118ブートローダーならデフォルトサイズで普通に動く**（cuynu氏が別のAU版XZ2 Premiumで3回で成功）。
+
+つまり正しい順番は：
+
+```
+1. XperiFirmでH8116 Globalファームウェアをダウンロード
+2. *.ta ファイルを削除
+3. newflasherでフラッシュ（ブートローダーもGlobal版になる）
+4. xperableをデフォルト設定で実行 → そのまま成功
+```
+
+この順番なら、サイズ修正もhitcodeパッチもTA変更も全部不要で、文鎮化も起きなかった。
+
+### docomo版 (SO-04K) だけはGlobal化不可
+
+ハードウェアレベルの制限があり、Global版ファームウェアをフラッシュできない。AU版・SoftBank版は問題なくGlobal化できる。
+
+### 今回の作業は無駄だったのか？
+
+- サイズ修正・hitcodeパッチの[PR](https://github.com/j4nn/xperable/pull/3)は、**AU版ブートローダーのまま使いたい人には有効**
+- TA復旧の手順やツールは、**同じミスをした人の救済手段**として残る
+- 文鎮化したからこそ復旧方法を確立できた面もある
+
+:::info まとめ
+**「Global FWを先に焼く → xperableデフォルトで動く → TA変更不要」**が最短ルートだった。これから同じ端末で作業する人は、まずGlobal化してからBLアンロックに進むことを強く推奨する。
+:::
+
 ## 今後の可能性
 
 - **カスタムROM**: CKBに依存しないカメラHALを使うROMを探す
