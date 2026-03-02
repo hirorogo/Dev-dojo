@@ -118,28 +118,84 @@ for unit_num, data in units.items():
 
 ## 補足: Global化の正しい方法（TAを変更しない）
 
-:::tip 文鎮化を回避できた方法
+:::tip この方法を使えば文鎮化は避けられた
 今回の文鎮化はCDA_NRを直接TAパーティションで書き換えたことが原因でした。実は、**TAを一切変更せずに**Global化する方法があります。（[j4nn/xperable Issue #2](https://github.com/j4nn/xperable/issues/2) のcuynu氏の情報）
+:::
 
-**手順:**
-1. [XperiFirm](https://xdaforums.com/t/tool-xperifirm-xperia-firmware-downloader-v5-7-0.2834142/) で **H8116** (シングルSIM版) のGlobalファームウェアをダウンロード
-2. ダウンロードしたファームウェアフォルダ内の **`*.ta` ファイルを全て削除**
-3. `newflasher` でフラッシュ
+### なぜGlobal化するのか
+
+国内キャリア版（AU/docomo/SoftBank）のブートローダーは、Global版と挙動が違うことがある。実際にAU版P118ブートローダーではxperableのデフォルトサイズ `0x400f90` でオーバーフローが発生せず、サイズ修正やhitcodeパッチが必要だった。
+
+一方、**Global版P118ブートローダーならxperableがデフォルト設定のまま動く**。先にGlobal化してからBLアンロックすれば、余計なパッチは一切不要。
+
+### 対応端末
+
+| キャリア | 型番 | Global化 |
+|---------|------|----------|
+| AU | SOV38 | ✅ 可能 |
+| SoftBank | — | ✅ 可能 |
+| docomo | SO-04K | ❌ **不可**（ハードウェア制限） |
+
+### 必要なもの
+
+- **XperiFirm** — Sony公式サーバーからファームウェアをダウンロードするツール（[XDA](https://xdaforums.com/t/tool-xperifirm-xperia-firmware-downloader-v5-7-0.2834142/)）
+- **newflasher** — ファームウェアをフラッシュするツール
+- **USBケーブル**
+
+### 手順
+
+#### 1. Globalファームウェアをダウンロード
+
+XperiFirmを起動し、**H8116**（XZ2 PremiumのシングルSIMモデル）を選択。リージョンはどこでもOK（Customized GLが無難）。
+
+:::warning H8166 ではなく H8116 を選ぶこと
+- **H8116** = シングルSIM版（Global）← これを選ぶ
+- **H8166** = デュアルSIM版
+- SOV38はシングルSIMなので H8116 を使う
+:::
+
+#### 2. TAファイルを削除
+
+ダウンロードしたフォルダの中に `.ta` ファイルがいくつか入っている。**これを全部削除する**。
 
 ```bash
-# .taファイルを削除してからフラッシュ
 cd firmware_H8116_global/
-rm -f *.ta
+ls *.ta          # TAファイルがあることを確認
+rm -f *.ta       # 全て削除
+ls *.ta          # 何も表示されなければOK
+```
+
+TAファイルを消す理由：newflasherはフォルダ内の `.ta` ファイルがあるとTAパーティションを上書きしてしまう。消しておけばファームウェア（system/vendor/boot/ブートローダー等）だけが書き換わり、**TAパーティションはそのまま残る**。
+
+#### 3. S1モードでフラッシュ
+
+```bash
+# 端末をS1モードにする（電源OFF → ボリュームDOWN押しながらUSB接続 → 緑LED）
 ./newflasher
 ```
 
-TAファイルを削除することで、newflasherがTAパーティションを上書きしません。ファームウェア(system/vendor/boot等)だけがGlobal版に置き換わり、TAの整合性は保たれます。
+newflasherの質問には基本的にデフォルトで回答すればOK。
 
-**注意:**
-- docomo版 (SO-04K) はGlobal化不可（ハードウェアレベルの制限）
-- AU版 (SOV38) / SoftBank版は可能
-- この方法ならCDA_NRの不整合による文鎮化のリスクはゼロ
+:::tip BLロック状態でもフラッシュできる
+「BLアンロック前にファーム焼けるの？」と思うかもしれないが、S1モードでのファームウェアフラッシュはBLの状態に関係なく動く。S1フラッシュとfastbootのBLアンロックは全く別の仕組み。**BLロックのまま先にGlobalファームを入れて、その後xperableでBLアンロック**という順番が可能。
 :::
+
+#### 4. 起動確認
+
+フラッシュ完了後、端末が自動で再起動するので、Androidが正常に起動することを確認。
+
+### おすすめの作業順序
+
+今から国内版XZ2 Premiumを改造するなら、この順番が最短：
+
+```
+1. TAバックアップを取る（万が一に備えて）
+2. Global FWをフラッシュ（上の手順）
+3. xperableをデフォルト設定で実行 → BLアンロック
+4. Magisk root化
+```
+
+TAを触る必要は一切ないし、xperableのサイズ修正やhitcodeパッチも不要。
 
 ## Sony fastboot の2つのモード
 
