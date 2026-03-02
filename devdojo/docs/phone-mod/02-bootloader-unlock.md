@@ -106,14 +106,21 @@ SOV38はSonyの公式アンロックに対応していないため、**xperable*
 
 ### xperable とは
 
-[xperable](https://github.com/xperiofficial/xperable) は、国内キャリア版Xperiaのブートローダーをアンロックするツールです。S1モードでデバイスに接続し、TAパーティションの `rooting_status` を書き換えます。
+[xperable](https://github.com/hirorogo/xperable) は、国内キャリア版Xperiaのブートローダーをアンロックするツールです。S1モードでデバイスに接続し、TAパーティションの `rooting_status` を書き換えます。
+
+:::tip ヘルパーツールで簡単に
+このフォークには **SOV38 Helper** (`sov38_helper.py`) が含まれています。TAバックアップ、BLアンロック、Magisk root化をガイド付きで実行できます：
+```bash
+python3 sov38_helper.py
+```
+:::
 
 ### 手順
 
 #### ① xperableをダウンロード
 
 ```bash
-git clone https://github.com/xperiofficial/xperable
+git clone https://github.com/hirorogo/xperable
 cd xperable
 ```
 

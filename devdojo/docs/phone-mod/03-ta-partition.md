@@ -115,7 +115,7 @@ fastboot reboot
 ```
 
 :::warning boot_a と boot_b
-最近のAndroid端末はA/Bスロット方式です。通常は `boot_a` でOKですが、不安な場合は：
+SOV38はA/Bスロット方式です。通常は `boot_a` でOKですが、不安な場合は：
 ```bash
 fastboot getvar current-slot
 # → current-slot: a  ← この場合 boot_a に書き込む
